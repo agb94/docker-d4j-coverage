@@ -63,6 +63,7 @@ def merge(coverage_dir, savepath, sparse=True):
         logging.debug("Adding {}: {}".format(test_key, cov.shape))
     if sparse:
         cov = pd.DataFrame.sparse.from_spmatrix(csr_matrix(cov), index=cov.index, columns=cov.columns)
+    cov = cov.astype(bool)
     cov.to_pickle(savepath)
     logging.debug("Saved to {}".format(savepath))
 

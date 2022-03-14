@@ -11,11 +11,11 @@ if __name__ == "__main__":
     tc = []
     with open(args.input_path, 'r') as f:
         for l in f:
-            print(l.strip())
             m = re.match("(\w+)\(([\w|\.]+)\)", l.strip())
             case_name = m.group(1)
             class_name = m.group(2)
             tc.append(class_name + "::" + case_name)
 
+    print(f"{len(tc)} tests found.")
     with open(args.output_path, 'w') as f:
         f.write("\n".join(tc))
