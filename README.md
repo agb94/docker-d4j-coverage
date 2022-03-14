@@ -1,5 +1,7 @@
 ## Docker setup
 ```bash
+git clone https://github.com/agb94/docker-d4j-coverage
+cd docker-d4j-coverage/
 cd docker/
 docker build --tag d4j-cov:latest .
 docker run -dt --name d4j-cov -v $(pwd)/resources/workspace:/root/workspace -v $(pwd)/resources/coverage:/root/coverage d4j-cov:latest
