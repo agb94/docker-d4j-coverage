@@ -1,5 +1,6 @@
-FROM nimmis/ubuntu:16.04
+FROM nimmis/ubuntu:18.04
 
+# disable interactive functions
 ENV DEBIAN_FRONTEND noninteractive
 
 # set default java environment variable
@@ -7,6 +8,7 @@ ENV JAVA_VERSION_MAJOR=8 \
     JAVA_VERSION_MINOR=111 \
     JAVA_HOME=/usr/lib/jvm/default-jvm \
     PATH=${PATH}:/usr/lib/jvm/default-jvm/bin/
+
 
 RUN add-apt-repository ppa:openjdk-r/ppa -y && \
     # update data from repositories
@@ -22,45 +24,33 @@ RUN add-apt-repository ppa:openjdk-r/ppa -y && \
     # remove apt cache from image
     apt-get clean all
 
-# Check Java version
 RUN java -version && \
     javac -version
 
 # Install linux packages
 RUN apt-get update
-RUN apt-get -qq -y install git curl build-essential subversion perl wget unzip vim bc
+RUN apt-get -qq -y install git curl build-essential subversion perl wget unzip vim
 
-RUN cd /usr/local/ && mkdir apache-maven/ && \
-      cd apache-maven/ && \
-      wget http://mirror.navercorp.com/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz && \
-      tar -zxvf apache-maven-3.6.3-bin.tar.gz
+RUN apt install -y python3-pip
 
-# Setup Apache Maven
-ENV M2_HOME="/usr/local/apache-maven/apache-maven-3.6.3"
-ENV M2="$M2_HOME/bin"
-ENV MAVEN_OPTS="-Xms256m -Xmx512m"
-ENV PATH="$M2:$PATH"
-
-# Check Maven version
-RUN mvn -version
-
-# Install Python
-RUN add-apt-repository -y ppa:fkrull/deadsnakes
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends python3.6 python3.6-dev python3-pip python3-setuptools python3-wheel gcc
-RUN python3.6 -m pip install pip --upgrade
-RUN python3.6 -m pip install pandas numpy scipy
+RUN apt-get install bc
 
 WORKDIR /root
 
-# Install Defects4j
+# D4J Setup
 COPY resources/install_defects4j.sh install_defects4j.sh
 RUN chmod +x install_defects4j.sh
+RUN ./install_defects4j.sh
+ENV PATH="${PATH}:/root/defects4j/framework/bin"
+
+RUN python3.6 -m pip install tqdm tabulate
+RUN python3.6 -m pip install numpy scipy pandas
+RUN python3.6 -m pip install torch==1.9.0 --extra-index-url https://download.pytorch.org/whl/cpu
+
 
 ENV TZ="America/Los_Angeles"
 ENV D4J_HOME="/root/defects4j"
 ENV PATH="${PATH}:/root/defects4j/framework/bin"
-RUN ./install_defects4j.sh
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
 ENV TMP_DIR="/tmp"
