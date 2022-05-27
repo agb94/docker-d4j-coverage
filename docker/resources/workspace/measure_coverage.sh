@@ -17,8 +17,11 @@ defects4j test
 
 [ ! -d /root/workspace/all_tests/ ] && mkdir /root/workspace/all_tests/
 all_tests=/root/workspace/all_tests/$project-$version
+[ ! -d /root/workspace/failing_tests/ ] && mkdir /root/workspace/failing_tests/
+failing_tests=/root/workspace/failing_tests/$project-$version
 
 python3.6 /root/workspace/get_all_tests.py $project_dir/all_tests $all_tests
+defects4j export -p tests.trigger -o $failing_tests
 
 result_path=$COVERAGE_DIR/$project-$version
 [ ! -d $COVERAGE_DIR ] && mkdir $COVERAGE_DIR
